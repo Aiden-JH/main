@@ -3,7 +3,7 @@
 import os
 import traceback
 
-from PyQt6.QtCore import Qt, QThread, pyqtSignal, QMimeData
+from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont, QDragEnterEvent, QDropEvent
 from PyQt6.QtWidgets import (
     QApplication,
@@ -27,6 +27,14 @@ from .parser import extract_text_from_file, extract_text_from_url
 from .screener import screen_resume
 
 
+# Color schemes for result types
+RESULT_COLORS = {
+    "적합": {"bg": "#e8f5e9", "border": "#4caf50", "icon": "\u2705", "label_color": "#2e7d32"},
+    "보류": {"bg": "#fff8e1", "border": "#ffc107", "icon": "\u23f8\ufe0f", "label_color": "#f57f17"},
+    "부적합": {"bg": "#ffebee", "border": "#f44336", "icon": "\u274c", "label_color": "#c62828"},
+}
+
+
 # ---------------------------------------------------------------------------
 # Worker thread for API calls
 # ---------------------------------------------------------------------------
@@ -34,7 +42,7 @@ from .screener import screen_resume
 class ScreeningWorker(QThread):
     """Runs the Claude API screening call in a background thread."""
 
-    finished = pyqtSignal(str)
+    finished = pyqtSignal(dict)
     error = pyqtSignal(str)
 
     def __init__(self, api_key: str, jd: str, resume: str, notes: str):
@@ -125,8 +133,8 @@ class FileDropArea(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("이력서 스크리닝 도구")
-        self.setMinimumSize(1100, 750)
+        self.setWindowTitle("IrisBright Resume Screener")
+        self.setMinimumSize(1200, 700)
         self.worker: ScreeningWorker | None = None
 
         self._build_ui()
@@ -251,11 +259,61 @@ class MainWindow(QMainWindow):
 
         right_layout.addWidget(self._section_label("검토 결과"))
 
-        self.result_display = QTextEdit()
-        self.result_display.setReadOnly(True)
-        self.result_display.setPlaceholderText("검토 결과가 여기에 표시됩니다...")
-        self.result_display.setStyleSheet("font-size: 14px; line-height: 1.6;")
-        right_layout.addWidget(self.result_display)
+        # Result card container
+        self.result_card = QWidget()
+        self.result_card.setVisible(False)
+        card_layout = QVBoxLayout(self.result_card)
+        card_layout.setContentsMargins(20, 20, 20, 20)
+        card_layout.setSpacing(16)
+
+        # Title line
+        self.result_title = QLabel("\U0001f4cb 서류 검토 결과")
+        self.result_title.setFont(QFont("", 16, QFont.Weight.Bold))
+        self.result_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        card_layout.addWidget(self.result_title)
+
+        # Conclusion line
+        self.result_conclusion = QLabel()
+        self.result_conclusion.setFont(QFont("", 18, QFont.Weight.Bold))
+        self.result_conclusion.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        card_layout.addWidget(self.result_conclusion)
+
+        # Separator
+        sep = QLabel()
+        sep.setFixedHeight(1)
+        sep.setStyleSheet("background-color: #ddd;")
+        card_layout.addWidget(sep)
+
+        # Reasons header
+        reasons_header = QLabel("\U0001f4dd 판단 사유:")
+        reasons_header.setFont(QFont("", 13, QFont.Weight.Bold))
+        card_layout.addWidget(reasons_header)
+
+        # Reasons list
+        self.result_reasons = QLabel()
+        self.result_reasons.setFont(QFont("", 13))
+        self.result_reasons.setWordWrap(True)
+        self.result_reasons.setStyleSheet("padding-left: 8px; line-height: 1.8;")
+        card_layout.addWidget(self.result_reasons)
+
+        card_layout.addStretch()
+        right_layout.addWidget(self.result_card, stretch=1)
+
+        # Placeholder when no result yet
+        self.result_placeholder = QLabel("검토 결과가 여기에 표시됩니다...")
+        self.result_placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.result_placeholder.setStyleSheet("color: #aaa; font-size: 14px;")
+        right_layout.addWidget(self.result_placeholder, stretch=1)
+
+        # Error display (hidden by default)
+        self.error_display = QTextEdit()
+        self.error_display.setReadOnly(True)
+        self.error_display.setVisible(False)
+        self.error_display.setStyleSheet(
+            "color: #c62828; background-color: #ffebee; border: 1px solid #f44336; "
+            "border-radius: 6px; padding: 12px; font-size: 13px;"
+        )
+        right_layout.addWidget(self.error_display)
 
         # Copy & clear buttons
         btn_row = QHBoxLayout()
@@ -268,7 +326,7 @@ class MainWindow(QMainWindow):
         right_layout.addLayout(btn_row)
 
         splitter.addWidget(right_widget)
-        splitter.setSizes([480, 620])
+        splitter.setSizes([500, 700])
 
     # ---- Helpers ----
 
@@ -278,6 +336,46 @@ class MainWindow(QMainWindow):
         label.setFont(QFont("", 12, QFont.Weight.Bold))
         label.setStyleSheet("margin-top: 6px; margin-bottom: 2px;")
         return label
+
+    def _display_result(self, data: dict):
+        """Render the structured screening result with color coding."""
+        result = data["result"]
+        reasons = data["reasons"]
+
+        colors = RESULT_COLORS.get(result, RESULT_COLORS["보류"])
+
+        # Style the card
+        self.result_card.setStyleSheet(
+            f"QWidget {{ background-color: {colors['bg']}; "
+            f"border: 2px solid {colors['border']}; border-radius: 10px; }}"
+        )
+
+        # Conclusion text
+        self.result_conclusion.setText(f"{colors['icon']} 결론: {result}")
+        self.result_conclusion.setStyleSheet(
+            f"color: {colors['label_color']}; font-size: 18px; font-weight: bold; "
+            f"border: none; padding: 8px;"
+        )
+
+        # Reasons as bullet list
+        bullet_lines = []
+        for reason in reasons:
+            bullet_lines.append(f"  \u2022  {reason}")
+        self.result_reasons.setText("\n".join(bullet_lines))
+        self.result_reasons.setStyleSheet(
+            "border: none; padding-left: 8px; line-height: 1.8; font-size: 13px;"
+        )
+
+        # Fix child label styles to not inherit card border
+        self.result_title.setStyleSheet("border: none;")
+
+        # Show card, hide placeholder and error
+        self.result_card.setVisible(True)
+        self.result_placeholder.setVisible(False)
+        self.error_display.setVisible(False)
+
+        # Store for copy
+        self._last_result = data
 
     # ---- Actions ----
 
@@ -291,7 +389,8 @@ class MainWindow(QMainWindow):
             if text:
                 self.jd_text_input.setPlainText(text)
             else:
-                QMessageBox.warning(self, "텍스트 추출 실패", "페이지에서 텍스트를 추출하지 못했습니다.\n직접 붙여넣기를 이용해주세요.")
+                QMessageBox.warning(self, "텍스트 추출 실패",
+                                    "페이지에서 텍스트를 추출하지 못했습니다.\n직접 붙여넣기를 이용해주세요.")
         except Exception as exc:
             QMessageBox.warning(
                 self, "URL 가져오기 실패",
@@ -320,7 +419,8 @@ class MainWindow(QMainWindow):
             try:
                 return extract_text_from_file(path)
             except Exception as exc:
-                QMessageBox.warning(self, "파일 읽기 실패", f"이력서 파일을 읽지 못했습니다:\n{exc}")
+                QMessageBox.warning(self, "파일 읽기 실패",
+                                    f"이력서 파일을 읽지 못했습니다:\n{exc}")
                 return None
         else:  # text tab
             text = self.resume_text_input.toPlainText().strip()
@@ -348,19 +448,25 @@ class MainWindow(QMainWindow):
         # Disable button, show progress
         self.start_btn.setEnabled(False)
         self.progress.setVisible(True)
-        self.result_display.setPlainText("검토 중입니다... 잠시만 기다려주세요.")
+        self.result_card.setVisible(False)
+        self.error_display.setVisible(False)
+        self.result_placeholder.setVisible(True)
+        self.result_placeholder.setText("검토 중입니다... 잠시만 기다려주세요.")
 
         self.worker = ScreeningWorker(api_key, jd, resume, notes)
         self.worker.finished.connect(self._on_result)
         self.worker.error.connect(self._on_error)
         self.worker.start()
 
-    def _on_result(self, text: str):
-        self.result_display.setMarkdown(text)
+    def _on_result(self, data: dict):
+        self._display_result(data)
         self._finish_loading()
 
     def _on_error(self, msg: str):
-        self.result_display.setPlainText(msg)
+        self.result_card.setVisible(False)
+        self.result_placeholder.setVisible(False)
+        self.error_display.setVisible(True)
+        self.error_display.setPlainText(msg)
         self._finish_loading()
 
     def _finish_loading(self):
@@ -368,11 +474,23 @@ class MainWindow(QMainWindow):
         self.progress.setVisible(False)
 
     def _copy_result(self):
-        text = self.result_display.toPlainText()
-        if text:
-            clipboard = QApplication.clipboard()
-            if clipboard:
-                clipboard.setText(text)
+        if not hasattr(self, "_last_result") or not self._last_result:
+            return
+
+        data = self._last_result
+        result = data["result"]
+        colors = RESULT_COLORS.get(result, RESULT_COLORS["보류"])
+        lines = [
+            "\U0001f4cb 서류 검토 결과",
+            f"{colors['icon']} 결론: {result}",
+            "\U0001f4dd 판단 사유:",
+        ]
+        for reason in data["reasons"]:
+            lines.append(f"  \u2022 {reason}")
+
+        clipboard = QApplication.clipboard()
+        if clipboard:
+            clipboard.setText("\n".join(lines))
 
     def _clear_all(self):
         self.jd_url_input.clear()
@@ -381,4 +499,8 @@ class MainWindow(QMainWindow):
         self.resume_text_input.clear()
         self.ref_link_input.clear()
         self.file_drop.clear()
-        self.result_display.clear()
+        self.result_card.setVisible(False)
+        self.error_display.setVisible(False)
+        self.result_placeholder.setVisible(True)
+        self.result_placeholder.setText("검토 결과가 여기에 표시됩니다...")
+        self._last_result = None
