@@ -1,0 +1,93 @@
+portfolio_rules:
+  min_total_cash_ratio: 0.10
+  preferred_total_cash_ratio: 0.12
+  max_total_cash_ratio: 0.18
+
+  max_semiconductor_ratio_total: 0.45
+  max_single_stock_ratio_total: 0.25
+  max_musk_exposure_ratio_total: 0.20
+
+basic_account:
+  do_not_add_roles:
+    - core_semiconductor
+    - ai_hardware
+    - global_ai
+
+  trim_candidates:
+    - ticker: "196170"
+      name: "알테오젠"
+      reason: "전략적 의미가 약한 소액 바이오 옵션"
+
+  doosan_reentry:
+    ticker: "034020"
+    name: "두산에너빌리티"
+    watch_below: 100000
+    first_buy_below: 95000
+    second_buy_near: 90000
+    max_qty: 10
+
+  hyundai_motor:
+    ticker: "005380"
+    name: "현대차"
+    no_add_above: 600000
+    first_buy_zone:
+      - 580000
+      - 590000
+    max_qty: 7
+
+  samsung_electro_mechanics:
+    ticker: "009150"
+    name: "삼성전기"
+    no_add_above: 2100000
+    first_buy_zone:
+      - 2050000
+      - 2100000
+    max_qty: 2
+
+ria_account:
+  min_cash_ratio: 0.20
+
+  preferred_assets:
+    - ticker: "105560"
+      name: "KB금융"
+    - ticker: "017670"
+      name: "SK텔레콤"
+    - ticker: "091160"
+      name: "KODEX 금융고배당TOP10"
+    - ticker: "441800"
+      name: "KODEX 주주환원고배당주"
+
+  do_not_add:
+    - ticker: "005930"
+      name: "삼성전자"
+    - ticker: "006800"
+      name: "미래에셋증권"
+
+  add_only_if_drop_pct:
+    financial_etf: -3.0
+    sk_telecom: -3.0
+    kb_financial: -3.0
+    shareholder_return_etf: -3.0
+
+spacex_rules:
+  ticker: "SPCX"
+  no_buy_above: 190
+  watch_below: 170
+  first_entry_zone:
+    - 155
+    - 160
+  good_entry_zone:
+    - 145
+    - 150
+  aggressive_entry_zone:
+    - 135
+    - 140
+  max_total_budget_krw: 5000000
+  prefer_funding_from_existing_overseas_sales: true
+
+ria_tax_rules:
+  ria_foreign_sale_amount_krw: 17164883
+  estimated_tax_saving_krw: 2163950
+  warn_if_overseas_net_buy_outside_ria: true
+  june_july_weight: 0.8
+  august_december_weight: 0.5

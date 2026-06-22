@@ -1,0 +1,21 @@
+account,ticker,name,market,currency,qty,avg_price,current_price,cost_basis,value,pnl,pnl_pct,role,source_note,updated_at
+basic,000660.KS,SK하이닉스,KR,KRW,9,882545.56,2911166.00,7942910,26200494,18257584,229.80,core_semiconductor,"basic account screenshot; current_price derived from value/qty",2026-06-22
+basic,005930.KS,삼성전자,KR,KRW,69,177108.80,351793.20,12220507,24273731,12053224,98.60,core_semiconductor,"basic account screenshot; current_price derived from value/qty",2026-06-22
+basic,005380.KS,현대차,KR,KRW,6,490000.00,580836.00,2940000,3485016,545016,18.50,value_auto,"basic account screenshot; current_price derived from value/qty",2026-06-22
+basic,012450.KS,한화에어로스페이스,KR,KRW,3,1116666.67,1119756.00,3350000,3359268,9268,0.20,defense_space,"basic account screenshot; current_price derived from value/qty",2026-06-22
+basic,009150.KS,삼성전기,KR,KRW,1,1727000.00,2222546.00,1727000,2222546,495546,28.60,ai_hardware,"basic account screenshot",2026-06-22
+basic,,KoAct 미국천연가스인프라액티브,KR,KRW,176,11751.80,11540.00,2068317,2031040,-37277,-1.80,energy_infra,"basic account screenshot; ETF ticker not visible",2026-06-22
+basic,034020.KS,두산에너빌리티,KR,KRW,5,91400.00,94311.00,457000,471555,14555,3.10,nuclear_power,"basic account screenshot; remaining after partial sale",2026-06-22
+basic,196170.KQ,알테오젠,KR,KRW,1,367000.00,350797.00,367000,350797,-16203,-4.40,bio_option,"basic account screenshot",2026-06-22
+basic,TSLA,테슬라,US,KRW,22,272547.55,604573.18,5996034,13300610,7304576,121.80,musk_exposure,"basic overseas screenshot; KRW values; current_price derived from value/qty",2026-06-22
+basic,NVDA,엔비디아,US,KRW,25.001558,66933.99,321480.46,1673424,8037512,6364088,380.30,global_ai,"basic overseas screenshot; KRW values; current_price derived from value/qty",2026-06-22
+ria,005930.KS,삼성전자,KR,KRW,9,289230.78,351795.00,2603077,3166155,563078,21.60,ria_largecap,"RIA screenshot; current_price derived from value/qty",2026-06-22
+ria,105560.KS,KB금융,KR,KRW,16,153900.00,156586.25,2462400,2505380,42980,1.70,ria_financial,"RIA screenshot; current_price derived from value/qty",2026-06-22
+ria,,KODEX 주주환원고배당주,KR,KRW,205,11933.41,11520.00,2446350,2361600,-84750,-3.40,ria_dividend_etf,"RIA screenshot; ETF ticker not visible",2026-06-22
+ria,,KODEX 금융고배당TOP10,KR,KRW,155,12839.03,13015.00,1990050,2017325,27275,1.30,ria_financial_etf,"RIA screenshot; ETF ticker not visible",2026-06-22
+ria,017670.KS,SK텔레콤,KR,KRW,17,104023.53,93113.41,1768400,1582928,-185472,-10.40,ria_defensive_telecom,"RIA screenshot; current_price derived from value/qty",2026-06-22
+ria,006800.KS,미래에셋증권,KR,KRW,9,59000.00,46107.67,531000,414969,-116031,-21.80,ria_satellite_spacex,"RIA screenshot; current_price derived from value/qty",2026-06-22
+ria,CASH_KRW,원화 예수금,CASH,KRW,1,,5077684.00,,5077684,,,cash,"RIA screenshot",2026-06-22
+other,RR.L,롤스로이스 홀딩스,UK,KRW,136,18454.78,28554.60,2509850,3883426,1373576,54.73,global_industrial,"other account screenshot; KRW values; current_price derived from value/qty",2026-06-22
+other,CASH_GBP,GBP 외화예수금,CASH,GBP,6.8,,13788.00,,13788,,,cash,"other account screenshot; KRW equivalent shown",2026-06-22
+other,CASH_KRW,현금잔고(예수금),CASH,KRW,1,,4440966.00,,4440966,,,cash,"other account screenshot",2026-06-22
