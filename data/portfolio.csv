@@ -1,0 +1,10 @@
+account,ticker,name,category,market,quantity,price,cost_basis,currency,liquidity
+basic,005930,Samsung Electronics,semiconductor,KR,80,78000,65000,KRW,high
+basic,000660,SK Hynix,semiconductor,KR,20,220000,150000,KRW,high
+basic,196170,Alteogen,biotech,KR,2,290000,330000,KRW,medium
+basic,CASHKRW,Basic Cash,cash,KR,1,500000,500000,KRW,high
+ria,NVDA,Nvidia,semiconductor,US,10,140,85,USD,high
+ria,SPY,S&P 500 ETF,index,US,4,550,480,USD,high
+ria,CASHUSD,RIA Cash,cash,US,1,250,250,USD,high
+overseas,SPACEX,SpaceX,private,US,5,240,180,USD,low
+overseas,TSLA,Tesla,auto,US,6,185,210,USD,high

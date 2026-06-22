@@ -1,0 +1,26 @@
+accounts:
+  basic:
+    cash_target_pct: 5
+  ria:
+    cash_target_pct: 12
+  overseas:
+    cash_target_pct: 3
+
+exposure_limits:
+  semiconductor_max_pct: 35
+
+actions:
+  trim_weight_pct: 25
+  trim_gain_pct: 80
+  watch_loss_pct: 15
+  buy_candidate_max_weight_pct: 5
+
+spacex_price_zones:
+  accumulate_below: 175
+  hold_below: 225
+  trim_above: 300
+
+weak_small_positions:
+  max_weight_pct: 10
+  names:
+    - Alteogen
